@@ -20,6 +20,12 @@ Route::get('/', function () {
 
 //rotte panel get
 Route::get('/gestioneTarget', [ControllerTarget::class,'stampaTarget']);
+Route::get('/associazioniTarget/{targetInfo}', [ControllerTarget::class,'stampaAssociazioni']);
 
 //route panel post
 Route::post('/gestioneTarget', [ControllerTarget::class,'store']);
+Route::post('/associazioniTarget/{targetInfo}', [ControllerTarget::class,'storeA']);
+
+//route panel delete
+Route::delete('/gestioneTarget/{evento}', [ControllerTarget::class,'destroy']);
+Route::delete('/associazioniTarget/{evento2}', [ControllerTarget::class,'destroy']);

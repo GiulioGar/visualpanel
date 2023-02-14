@@ -31,16 +31,29 @@
                 <table id='TableResultStatus' class="table table-striped table-hover dt-responsive display">
                     <thead>
                         <tr>
-                        <th>Id</th>
-                        <th>Target</th>
-
+                        <th style="width:10%"><i class="fa fa-cog"></i></th>
+                        <th style="width:10%">Id</th>
+                        <th style="width:60%">Target</th>
+                        <th style="width:10%">Utenti</th>
+                        <th style="width:10%">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach ($viewTarget as $stampTarget)
                     <tr>
+                        <td>
+                        <a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a>
+ 
+                      </td>
                         <td>{{$stampTarget->id}}</td>
                         <td>{{$stampTarget->nome}}</td>
+                        <td>5</td>
+                        <form action="/gestioneTarget/{{$stampTarget->id}}" method="POST">
+                        <td> 
+                        @method('delete')
+                        @csrf
+                        <button class="btn btn-success" onclick="return confirm('Sei sicuro?')" type="submit"><i class="fa-solid fa-trash-can"></i></button></td>
+                        </form>
                     </tr>
                     @endforeach
 
@@ -84,7 +97,6 @@
 </div>
 
 
-
 @endsection
 
 @section('footer')
@@ -94,6 +106,7 @@
         $('div.alert-info').fadeOut(5000);
         $('div.alert-danger').fadeOut(5000);
     });
+
 
 </script>
 

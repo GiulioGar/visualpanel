@@ -16,6 +16,7 @@ class PanelTargetList extends Migration
         Schema::create('target_list', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->char('nome',50);
+            $table->timestamps();
         });
     }
 
