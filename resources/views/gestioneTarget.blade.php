@@ -42,8 +42,8 @@
                     @foreach ($viewTarget as $stampTarget)
                     <tr>
                         <td>
-                        <a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a>
- 
+                        <div style="float:left; font-size:12px;"><a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a></div> 
+                        <div style="float:right; font-size:12px;"><a  href="#" id="edit-nome" class="btn btn-success" data-item-id="{{$stampTarget->id}}" data-nome="{{$stampTarget->nome}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
                       </td>
                         <td>{{$stampTarget->id}}</td>
                         <td>{{$stampTarget->nome}}</td>
@@ -97,6 +97,35 @@
 </div>
 
 
+<!-- MODALE PER MODIFICA TARGET -->
+<div class="modal fade" id="modalModTarget" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modifica Target</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modFormTarget" action="/gestioneTarget" method="POST" >
+                <div class="modal-body">
+                        {{csrf_field()}}
+                        <input type="hidden" name="_method" value="PATCH">
+                        <div class="form-group">
+                            <label>Modifica Nome Target</label>
+                            <input id="nomemod" type="text" required  class="form-control" name="nome" value="{{old('nome')}}" aria-describedby="Codice" placeholder="">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CHIUDI</button>
+                    <button type="submit" class="btn btn-primary">MODIFICA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('footer')
@@ -105,12 +134,42 @@
     $(document).ready(function(){
         $('div.alert-info').fadeOut(5000);
         $('div.alert-danger').fadeOut(5000);
+   
+
+
+   /*sezione modale modifica*/
+   $(document).on('click', "#edit-nome", function() {
+        $(this).addClass('edit-nome-trigger-clicked'); //useful for identifying which trigger was clicked and consequently grab data from the correct row and not the wrong one.
+        var options = {
+        'backdrop': 'static'
+        };
+        $('#modalModTarget').modal(options)
+        })
+        // on modal show
+        $('#modalModTarget').on('show.bs.modal', function() {
+        //la classe trigger l'avrà solo l'elemento cliccato
+        var el = $(".edit-nome-trigger-clicked");
+        console.log(el);
+        var id = el.data('item-id');
+        var nome = el.data('nome');
+        console.log("idstampato:"+id);
+        console.log("nome:"+nome);
+        var urlAction="/gestioneTarget/"+id;
+        console.log("url"+urlAction);
+        //alert(urlAction);
+        $('#modFormTarget').attr('action', urlAction);
+        // fill the data in the input fields
+        $("#nomemod").val(nome);
+        })
+        // on modal hide
+        $('#modalModTarget').on('hide.bs.modal', function() {
+        //quando si chiude la modali viene rimossa la classe trigger all'elemento cliccato
+        $('.edit-nome-trigger-clicked').removeClass('edit-nome-trigger-clicked')
+        $("#edit-form").trigger("reset");
+        })
+        ///////////////////////////////////////////////
     });
-
-
 </script>
 
 
 @endsection
-
-

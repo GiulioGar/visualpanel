@@ -29,3 +29,6 @@ Route::post('/associazioniTarget/{targetInfo}', [ControllerTarget::class,'storeA
 //route panel delete
 Route::delete('/gestioneTarget/{evento}', [ControllerTarget::class,'destroy']);
 Route::delete('/associazioniTarget/{evento2}', [ControllerTarget::class,'destroy']);
+
+//route edit
+Route::patch('/gestioneTarget/{targ}', [ControllerTarget::class,'update']);

@@ -62,6 +62,28 @@ class ControllerTarget extends Controller
        return redirect()->back();
     }
 
+    //modifica nome target
+    public function update(Target $targ)
+    {
+        $rules = [
+            'nome'=>'required'
+        ];
+
+        $ErrorMessages = [
+            'nome.required'=>'Il campo nome è obbligatorio'
+            
+        ];
+
+        $dati=request()->validate($rules, $ErrorMessages);
+        $targ->nome=$dati["nome"];
+        $res=$targ->save();
+        $messaggio=$res? "Nome modificato correttamente": "Errore";
+
+        session()->flash('message',$messaggio);
+        return redirect()->back();
+
+    }
+
     //crea nuove associazioni
     public function storeA(Request $dati, Target $targetInfo)
     {
@@ -106,5 +128,8 @@ class ControllerTarget extends Controller
         $evento2->delete();
         return redirect()->back();
     }
+
+
+    
 
 }
