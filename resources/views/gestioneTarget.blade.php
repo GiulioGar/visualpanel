@@ -42,14 +42,14 @@
                     @foreach ($viewTarget as $stampTarget)
                     <tr>
                         <td>
-                        <div style="float:left; font-size:12px;"><a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a></div> 
+                        <div style="float:left; font-size:12px;"><a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a></div>
                         <div style="float:right; font-size:12px;"><a  href="#" id="edit-nome" class="btn btn-success" data-item-id="{{$stampTarget->id}}" data-nome="{{$stampTarget->nome}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
                       </td>
                         <td>{{$stampTarget->id}}</td>
                         <td>{{$stampTarget->nome}}</td>
-                        <td>5</td>
+                        <td>{{$stampTarget->utenti}}</td>
                         <form action="/gestioneTarget/{{$stampTarget->id}}" method="POST">
-                        <td> 
+                        <td>
                         @method('delete')
                         @csrf
                         <button class="btn btn-success" onclick="return confirm('Sei sicuro?')" type="submit"><i class="fa-solid fa-trash-can"></i></button></td>
@@ -134,7 +134,7 @@
     $(document).ready(function(){
         $('div.alert-info').fadeOut(5000);
         $('div.alert-danger').fadeOut(5000);
-   
+
 
 
    /*sezione modale modifica*/

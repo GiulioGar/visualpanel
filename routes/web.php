@@ -20,6 +20,7 @@ Route::get('/', function () {
 
 //rotte panel get
 Route::get('/gestioneTarget', [ControllerTarget::class,'stampaTarget']);
+Route::get('/leggiapi', [ControllerTarget::class,'readApi']);
 Route::get('/associazioniTarget/{targetInfo}', [ControllerTarget::class,'stampaAssociazioni']);
 
 //route panel post

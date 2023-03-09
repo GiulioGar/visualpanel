@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Target;
 use App\Models\Associazioni;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ControllerTarget extends Controller
 {
@@ -11,11 +12,61 @@ class ControllerTarget extends Controller
     public function stampaTarget()
     {
 
-     $viewTarget=Target::get();
-            //dd($ciclisti);
+    $viewTarget=Target::with('regole')->get();
+    //dd($viewTarget[1]->regole);
+
+foreach ($viewTarget as $target)
+{
+$contaUtenti=0;
+
+    foreach ($target->regole as $regola)
+        {
+
+            // consultazione API Primis
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer U3lMWWFBcktGZmM1MjdQRzpTUnV3dzROU1FtM2JGZTJZQndDdlF2TkNERXc4MmdiSzdhelkyQldYZjZSYVZWc3VHY3hLTVk1QjVZakF0YnAz'
+            ])->get("https://www.primisoft.com/primis/api/v1/projects/$regola->prj/surveys/$regola->sid/questions/$regola->questionCode/answers");
+
+           $jsonData = $response->json();
+           //dd($jsonData["answers"]);
+
+           foreach($jsonData["answers"] as $answers)
+           {
+            // controllo su singola
+            if($answers["selection_type"]=="single")
+            {
+             if ($answers["selection"]==$regola->optionCode)
+                {
+                $contaUtenti++;
+                }
+            }
+
+            //controllo su multipla
+            if($answers["selection_type"]=="multiple")
+            {
+                if (in_array($regola->optionCode, $answers["selection"]))
+                {
+                $contaUtenti++;
+                }
+            }
+
+
+           }
+
+           //dd(count ($jsonData["answers"]));
+
+        }
+
+        $target->utenti=$contaUtenti;
+
+}
+
+//dd($viewTarget);
+
             return view("gestioneTarget", compact('viewTarget'));
 
     }
+
 
     //STAMPA ASSOCIAZIONI
     public function stampaAssociazioni(Target $targetInfo)
@@ -71,7 +122,7 @@ class ControllerTarget extends Controller
 
         $ErrorMessages = [
             'nome.required'=>'Il campo nome è obbligatorio'
-            
+
         ];
 
         $dati=request()->validate($rules, $ErrorMessages);
@@ -90,12 +141,14 @@ class ControllerTarget extends Controller
 
         $rules = [
             'sid'=>'required',
+            'prj'=>'required',
             'code'=>'required',
             'options'=>'required'
         ];
 
         $ErrorMessages = [
             'sid.required'=>'Il campo ricerca è obbligatorio',
+            'prj.required'=>'Il campo progetto è obbligatorio',
             'code.required'=>'Il campo codice domanda è obbligatorio',
             'options.required'=>'Il campo opzioni domanda è obbligatorio'
         ];
@@ -103,6 +156,7 @@ class ControllerTarget extends Controller
         $this->validate(
             $dati,
             [ 'sid'=>'required|max:50'],
+            [ 'prj'=>'required|max:50'],
             [ 'code'=>'required|max:50'],
             [ 'options'=>'required' ]
         );
@@ -113,6 +167,7 @@ class ControllerTarget extends Controller
         $ass= new Associazioni();
         $ass->targetId=$targetInfo->id;
         $ass->sid=$dati["sid"];
+        $ass->prj=$dati["prj"];
         $ass->questionCode=$dati["code"];
         $ass->optionCode=$dati["options"];
         $res=$ass->save();
@@ -130,6 +185,9 @@ class ControllerTarget extends Controller
     }
 
 
-    
+
+
+
+
 
 }

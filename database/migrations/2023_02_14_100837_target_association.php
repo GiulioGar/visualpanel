@@ -16,6 +16,7 @@ class TargetAssociation extends Migration
             Schema::create('target_association', function (Blueprint $table)
          {
             $table->bigIncrements('id')->unique();
+            $table->string('prj',10)->nullable();
             $table->string('sid',20)->nullable();
             $table->string('questionCode',20)->nullable();
             $table->string('optionCode',50)->nullable();

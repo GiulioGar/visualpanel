@@ -28,14 +28,15 @@
     <div class="text-right mb-3">
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCreaAss">+ ASSOCIAZIONE</button>
     </div>
- 
+
  <div class="table-responsive">
     <table id='TableResultStatus' class="table table-striped table-hover dt-responsive display">
         <thead>
             <tr>
             <th style="width:10%"><i class="fa fa-cog"></i></th>
             <th style="width:10%">Id</th>
-            <th style="width:20%">Sid</th>
+            <th style="width:10%">PRJ</th>
+            <th style="width:20%">SID</th>
             <th style="width:20%">Codice domanda</th>
             <th style="width:40%">Opzioni</th>
             </tr>
@@ -43,10 +44,10 @@
         <tbody>
         @foreach ($viewAss as $stampAss)
         <tr>
-            
+
             <td>
                 <form action="/associazioniTarget/{{$stampAss->id}}" method="POST">
-                    
+
                         @method('delete')
                         @csrf
                         <button class="btn btn-success" onclick="return confirm('Sei sicuro?')" type="submit"><i class="fa-solid fa-trash-can"></i></button>
@@ -54,6 +55,7 @@
             </td>
 
             <td>{{$stampAss->id}}</td>
+            <td>{{$stampAss->prj}}</td>
             <td>{{$stampAss->sid}}</td>
             <td>{{$stampAss->questionCode}}</td>
             <td>{{$stampAss->optionCode}}</td>
@@ -85,7 +87,11 @@
                 <div class="modal-body">
                         {{csrf_field()}}
                         <div class="form-group">
-                            <label>Sid</label>
+                            <label>PRJ</label>
+                            <input type="text" required  class="form-control" name="prj" value="" aria-describedby="Codice" placeholder="Codice Progetto">
+                        </div>
+                        <div class="form-group">
+                            <label>SID</label>
                             <input type="text" required  class="form-control" name="sid" value="" aria-describedby="Codice" placeholder="Sid Ricerca">
                         </div>
                         <div class="form-group">
@@ -96,7 +102,7 @@
                         <div class="form-group">
                             <label>Opzioni domande</label>
                             <input type="text" required  class="form-control" name="options" value="" aria-describedby="Codice" placeholder="Opzioni es. (0,1,2..)">
-                        </div> 
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">CHIUDI</button>
