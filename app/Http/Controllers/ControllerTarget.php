@@ -8,16 +8,22 @@ use Illuminate\Support\Facades\Http;
 
 class ControllerTarget extends Controller
 {
-    //STAMPA TARGET
-    public function stampaTarget()
-    {
 
-    $viewTarget=Target::with('regole')->get();
-    //dd($viewTarget[1]->regole);
+//STAMPA TARGET
+public function stampaTarget()
+{
 
+//leggo tabella
+$viewTarget=Target::with('regole')->get();
+
+//conto gli utenti
+$userList=[];
+$guest="GUEST";
+$idex="IDEX";
 foreach ($viewTarget as $target)
 {
 $contaUtenti=0;
+$uidOpt="";
 
     foreach ($target->regole as $regola)
         {
@@ -37,7 +43,14 @@ $contaUtenti=0;
             {
              if ($answers["selection"]==$regola->optionCode)
                 {
+                $uidOpt=$answers["user_id"];
+                if($uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
+                {
                 $contaUtenti++;
+                array_push($userList,$uidOpt);
+                }
+
+
                 }
             }
 
@@ -46,26 +59,36 @@ $contaUtenti=0;
             {
                 if (in_array($regola->optionCode, $answers["selection"]))
                 {
+                 $uidOpt=$answers["user_id"];
+                 if( $uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
+                {
                 $contaUtenti++;
+                array_push($userList,$uidOpt);
+                }
+
+
                 }
             }
 
 
            }
 
-           //dd(count ($jsonData["answers"]));
+           $userList = array_unique($userList);
+           
+        //dd($userList);
+
 
         }
 
         $target->utenti=$contaUtenti;
 
-}
+    }
 
-//dd($viewTarget);
+    //dd($viewTarget);
 
             return view("gestioneTarget", compact('viewTarget'));
 
-    }
+}
 
 
     //STAMPA ASSOCIAZIONI
