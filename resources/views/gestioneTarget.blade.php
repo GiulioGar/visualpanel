@@ -31,30 +31,36 @@
                 <table id='TableResultStatus' class="table table-striped table-hover dt-responsive display">
                     <thead>
                         <tr>
-                        <th style="width:10%"><i class="fa fa-cog"></i></th>
-                        <th style="width:10%">Id</th>
-                        <th style="width:60%">Target</th>
-                        <th style="width:10%">Utenti</th>
-                        <th style="width:10%">&nbsp;</th>
+                        <th colspan="2" style="width:5%; padding:0px; margin:0; text-align:center"></th>
+                        <th style="width:10%; text-align:center">Id</th>
+                        <th style="width:5%"></th>
+                        <th style="width:70%">Target</th>
+                        <th colspan="2" style="width:10%">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach ($viewTarget as $stampTarget)
                     <tr>
-                        <td>
-                        <div style="float:left; font-size:12px;"><a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-folder-open-o"></i></a></div>
-                        <div style="float:right; font-size:12px;"><a  href="#" id="edit-nome" class="btn btn-success" data-item-id="{{$stampTarget->id}}" data-nome="{{$stampTarget->nome}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
-                      </td>
-                        <td>{{$stampTarget->id}}</td>
+                 
+                        <td>  <a class="btn btn-success"  href="/associazioniTarget/{{$stampTarget->id}}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></td>
+                        <td>  <a  href="#" id="edit-nome" class="btn btn-success" data-item-id="{{$stampTarget->id}}" data-nome="{{$stampTarget->nome}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+                        
+                      
+                        <td style="width:10%; text-align:center">{{$stampTarget->id}}</td>
+                        <td> <a  href="/vediTarget/{{$stampTarget->id}}" class="btn btn-primary"><i class="fa fa-address-card" aria-hidden="true"></i></a></td>
                         <td>{{$stampTarget->nome}}</td>
-                        <td>{{$stampTarget->utenti}}</td>
                         <form action="/gestioneTarget/{{$stampTarget->id}}" method="POST">
                         <td>
                         @method('delete')
                         @csrf
                         <button class="btn btn-success" onclick="return confirm('Sei sicuro?')" type="submit"><i class="fa-solid fa-trash-can"></i></button></td>
                         </form>
+                        <td>
+                    <div style="float:right; font-size:12px;"><a  href="/export/{{$stampTarget->id}}" class="btn btn-warning"><i class="fa fa-cloud-download" aria-hidden="true"></i></a></div>
+
+                    </td>
                     </tr>
+
                     @endforeach
 
                     </tbody>

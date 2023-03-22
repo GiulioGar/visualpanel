@@ -5,6 +5,8 @@ use App\Models\Target;
 use App\Models\Associazioni;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ControllerTarget extends Controller
 {
@@ -12,81 +14,8 @@ class ControllerTarget extends Controller
 //STAMPA TARGET
 public function stampaTarget()
 {
-
-//leggo tabella
-$viewTarget=Target::with('regole')->get();
-
-//conto gli utenti
-$userList=[];
-$guest="GUEST";
-$idex="IDEX";
-foreach ($viewTarget as $target)
-{
-$contaUtenti=0;
-$uidOpt="";
-
-    foreach ($target->regole as $regola)
-        {
-
-            // consultazione API Primis
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer U3lMWWFBcktGZmM1MjdQRzpTUnV3dzROU1FtM2JGZTJZQndDdlF2TkNERXc4MmdiSzdhelkyQldYZjZSYVZWc3VHY3hLTVk1QjVZakF0YnAz'
-            ])->get("https://www.primisoft.com/primis/api/v1/projects/$regola->prj/surveys/$regola->sid/questions/$regola->questionCode/answers");
-
-           $jsonData = $response->json();
-           //dd($jsonData["answers"]);
-
-           foreach($jsonData["answers"] as $answers)
-           {
-            // controllo su singola
-            if($answers["selection_type"]=="single")
-            {
-             if ($answers["selection"]==$regola->optionCode)
-                {
-                $uidOpt=$answers["user_id"];
-                if($uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
-                {
-                $contaUtenti++;
-                array_push($userList,$uidOpt);
-                }
-
-
-                }
-            }
-
-            //controllo su multipla
-            if($answers["selection_type"]=="multiple")
-            {
-                if (in_array($regola->optionCode, $answers["selection"]))
-                {
-                 $uidOpt=$answers["user_id"];
-                 if( $uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
-                {
-                $contaUtenti++;
-                array_push($userList,$uidOpt);
-                }
-
-
-                }
-            }
-
-
-           }
-
-           $userList = array_unique($userList);
-           
-        //dd($userList);
-
-
-        }
-
-        $target->utenti=$contaUtenti;
-
-    }
-
-    //dd($viewTarget);
-
-            return view("gestioneTarget", compact('viewTarget'));
+    $viewTarget=Target::get();
+    return view("gestioneTarget", compact('viewTarget'));
 
 }
 
@@ -102,7 +31,6 @@ $uidOpt="";
    $viewAss=Associazioni::orderBy('id','ASC')->where('targetId', $idTarget)->get();
 
    return view("associazioniTarget", compact('viewAss','nomeTarget','idTarget'));
-
     }
 
     //crea nuove target
@@ -209,8 +137,108 @@ $uidOpt="";
 
 
 
+//// download csv ///
+
+public function csvDownload($id){
+
+    $users=$this->creaUserList($id);
+
+    return Excel::download(new UsersExport($users), 'users.csv');
+
+}
 
 
+public function creaUserList($id)
+{
+//leggo tabella
+$viewTarget=Target::with('regole')->where("id",$id)->get();
+$userListGlobal=[]; 
+//conto gli utenti
+
+$guest="GUEST";
+$idex="IDEX";
+foreach ($viewTarget as $target)
+{
+$userList=[];    
+$uidOpt="";
+
+    foreach ($target->regole as $regola)
+        {
+
+            // consultazione API Primis
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer U3lMWWFBcktGZmM1MjdQRzpTUnV3dzROU1FtM2JGZTJZQndDdlF2TkNERXc4MmdiSzdhelkyQldYZjZSYVZWc3VHY3hLTVk1QjVZakF0YnAz'
+            ])->get("https://www.primisoft.com/primis/api/v1/projects/$regola->prj/surveys/$regola->sid/questions/$regola->questionCode/answers");
+
+           $jsonData = $response->json();
+           //dd($jsonData["answers"]);
+
+           foreach($jsonData["answers"] as $answers)
+           {
+            // controllo su singola
+            if($answers["selection_type"]=="single")
+            {
+             if ($answers["selection"]==$regola->optionCode)
+                {
+                $uidOpt=$answers["user_id"];
+                if($uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
+                {
+                
+                array_push($userList,$uidOpt);
+                }
+
+
+                }
+            }
+
+            //controllo su multipla
+            if($answers["selection_type"]=="multiple")
+            {
+                if (in_array($regola->optionCode, $answers["selection"]))
+                {
+                 $uidOpt=$answers["user_id"];
+                 if( $uidOpt !=""  && !str_contains($uidOpt, "IDEX"))
+                {
+            
+                array_push($userList,$uidOpt);
+                }
+
+
+                }
+            }
+
+
+           }
+
+           $userList = array_unique($userList);
+           $users=[];
+           foreach ($userList as $u){
+            $users[]["UID"]=$u;
+           }
+
+           $userListGlobal[]=$users;
+
+           //$uvar=$this->csvDownload($userList);
+           
+        //dd($userList);
+
+
+        }
+
+    }
+    return $userListGlobal;
+    //dd($viewTarget);
+
+}
+
+    //CONTA USERS
+    public function countUsers($id)
+    {
+    $users=$this->creaUserList($id);
+    $nomeTarget=Target::find($id);
+
+    return view("vediTarget", compact("users","nomeTarget"));
+    }
 
 
 }

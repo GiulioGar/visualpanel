@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerTarget;
+use App\Http\Controllers\UserImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,7 @@ Route::get('/', function () {
 
 //rotte panel get
 Route::get('/gestioneTarget', [ControllerTarget::class,'stampaTarget']);
-//Route::get('/leggiapi', [ControllerTarget::class,'readApi']);
+Route::get('/vediTarget/{id}', [ControllerTarget::class,'countUsers']);
 Route::get('/associazioniTarget/{targetInfo}', [ControllerTarget::class,'stampaAssociazioni']);
 
 //route panel post
@@ -33,3 +34,5 @@ Route::delete('/associazioniTarget/{evento2}', [ControllerTarget::class,'destroy
 
 //route edit
 Route::patch('/gestioneTarget/{targ}', [ControllerTarget::class,'update']);
+
+Route::get('/export/{id}', [ControllerTarget::class, 'csvDownload']);
